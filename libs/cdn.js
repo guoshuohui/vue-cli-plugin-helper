@@ -8,7 +8,9 @@ const walkSync = require('walk-sync')
 
 const Providers = {
   qiniu: require('../provider/qiniu'),
-  // tencent: require('../provider/tencent')
+  // tencent: require('../provider/tencent'),
+  // aliyun: require('../provider/aliyun'),
+  // upyun: require('../provider/upyun'),
 }
 
 /**
