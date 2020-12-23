@@ -1,5 +1,7 @@
 'use strict'
 
+const walkSync = require('walk-sync')
+
 /**
  * 服务提供商
  */
@@ -9,12 +11,9 @@ const Providers = {
   // tencent: require('../provider/tencent')
 }
 
-
 /**
  * cdn服务
  */
-
-const walkSync = require('walk-sync')
 
 module.exports = async config => {
   return new Promise((resolve, reject) => {
@@ -51,8 +50,8 @@ module.exports = async config => {
     }
 
     if (method) {
-      return Provider[method]().then(() => { 
-        resolve() 
+      return Provider[method]().then(() => {
+        resolve()
       })
     }
   })
