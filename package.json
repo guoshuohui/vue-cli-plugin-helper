@@ -1,0 +1,16 @@
+{
+  "name": "vue-cli-plugin-da",
+  "version": "1.0.0",
+  "description": "vue-cli plugin to deploy",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "guoshuohui",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "lodash": "^4.17.20",
+    "qiniu": "^7.3.2",
+    "walk-sync": "^2.2.0"
+  }
+}
