@@ -68,18 +68,21 @@ module.exports = (api, options) => {
     config.ignoreConfig = utils._.merge(ignoreConfig, pluginOptions.ignore)
     config.helperConfig = utils._.merge(helperConfig, pluginOptions.helper)
 
-    console.log(chalk.black.green('--- 任务开始 ---'))
+    const buildStartTime = new Date().getTime()
+
+    console.log(chalk.black.bgGreen(' \n 任务开始 \n'))
 
     if (args.build) {
-      // await build(config)
+      await build(config)
       await cdn(config)
-      // await git(config)
+      await git(config)
     } else if (args.cdn) {
       await cdn(config)
+      await git(config)
     } else if (args.git) {
       await git(config)
     }
 
-    console.log(chalk.black.green('--- 任务完成 ---'))
+    console.log(chalk.black.bgGreen(`\n 任务顺利完成，总耗时 ${Math.ceil((new Date().getTime() - buildStartTime) / 1000)}s \n`))
   })
 }

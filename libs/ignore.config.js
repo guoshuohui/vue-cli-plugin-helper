@@ -15,18 +15,11 @@ module.exports = {
       secretKey: ''
     },
 
+    // 删除资源
+    remove: [],
+
     // 刷新资源
     refresh: {
-
-      // 文件
-      files: [],
-
-      // 目录
-      dirs: []
-    },
-
-    // 删除资源
-    delete: {
 
       // 文件
       files: [],

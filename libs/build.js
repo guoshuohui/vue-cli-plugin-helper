@@ -11,6 +11,9 @@ module.exports = async config => {
   return new Promise((resolve, reject) => {
     const task = config.api.service.pkg.scripts[config.helperConfig.build.script]
 
+    console.log(chalk.black.green('- 代码构建开始 -'))
+    const startTime = new Date().getTime()
+
     // 创建子进程
     let spawn = null
     if (!task) {
@@ -26,17 +29,18 @@ module.exports = async config => {
 
     // 命令不存在，创建子进程错误
     spawn.on('error', err => {
-      reject(err)
+      reject(new Error(err))
     })
 
     // 命令存在，运行报错
     spawn.stderr && spawn.stderr.on('data', () => {
-      reject()
+      reject(new Error('命令运行报错'))
     })
 
     // 执行完成
     spawn.on('close', code => {
       if (!code) {
+        console.log(chalk.black.green(`- 代码构建完成，耗时 ${Math.floor((new Date().getTime() - startTime) / 1000)}s -\n`))
         resolve()
       }
     })

@@ -1,5 +1,6 @@
 'use strict'
 
+const { conf } = require('qiniu')
 const walkSync = require('walk-sync')
 
 /**
@@ -28,7 +29,7 @@ module.exports = async config => {
         directories: false
       })
     } catch (error) {
-      reject(error)
+      reject(new Error(error))
       return
     }
 
@@ -39,16 +40,10 @@ module.exports = async config => {
 
     // 以下方法是所有 Provider 都必备的，统一命名
     let method = ''
-    if (config.args.build === 'push' || config.args.cdn === 'push') {
+    if (config.args.build === 'push') {
       method = 'push'
-    } else if (config.args.remove) {
-      method = 'remove'
-    } else if (config.args.refresh) {
-      method = 'refresh'
-    } else if (config.args.prefetch) {
-      method = 'prefetch'
-    } else if (config.args.getLogs) {
-      method = 'getLogs'
+    } else if (config.args.cdn) {
+      method = config.args.cdn
     }
 
     if (method) {

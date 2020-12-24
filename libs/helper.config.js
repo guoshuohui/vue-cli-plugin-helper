@@ -32,7 +32,8 @@ module.exports = {
     // 线上资源路径
     onlineDir: (() => {
       const date = new Date()
-      return `dist/${date.getFullYear()}-${utils.addZero(date.getMonth() + 1)}-${utils.addZero(date.getDate())}-${utils.addZero(date.getHours())}-${utils.addZero(date.getMinutes())}-${utils.addZero(date.getSeconds())}`
+      return `dist/${date.getFullYear()}-${utils.addZero(date.getMonth() + 1)}-${utils.addZero(date.getDate())}`
+      // return `dist/${date.getFullYear()}-${utils.addZero(date.getMonth() + 1)}-${utils.addZero(date.getDate())}-${utils.addZero(date.getHours())}-${utils.addZero(date.getMinutes())}-${utils.addZero(date.getSeconds())}`
     })(),
 
     // 上传后删除资源目录
