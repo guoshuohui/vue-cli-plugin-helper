@@ -7,7 +7,8 @@
 
 const qiniu = require('qiniu')
 const chalk = require('chalk')
-const { isError } = require('lodash')
+const { reject } = require('lodash')
+
 module.exports = class ProviderQiniu {
   constructor(config = {}) {
     this.api = config.api
@@ -29,6 +30,7 @@ module.exports = class ProviderQiniu {
     config.useCdnDomain = true
     this.formUploader = new qiniu.form_up.FormUploader(config)
     this.bucketManager = new qiniu.rs.BucketManager(mac, config)
+    this.cdnManager = new qiniu.cdn.CdnManager(mac)
   }
 
   // 单文件上传
@@ -85,8 +87,7 @@ module.exports = class ProviderQiniu {
   // 删除方法
   async remove() {
     return new Promise((resolve, reject) => {
-      let items = []
-      let deleteOperations = []
+      let items = [], deleteOperations = []
       let bucket = this.helperConfig.cdn.qiniu.options.scope
 
       if (this.args._.length) {
@@ -131,12 +132,153 @@ module.exports = class ProviderQiniu {
 
   // 刷新方法
   async refresh() {
+    return new Promise((resolve, reject) => {
+      let items = [], files = [], dirs = []
+      if (this.args._.length) {
+        items = this.args._
+      } else if (this.ignoreConfig.cdn.refresh.length) {
+        items = this.ignoreConfig.cdn.refresh
+      } else {
+        console.log(chalk.black.yellow('请输入或配置要刷新的资源～'))
+        return
+      }
 
+      // http和https共享缓存，刷新会自动刷新两种协议的资源
+      items.forEach(item => {
+        let httpUrl = '', httpsUrl = ''
+        if (!item.includes('http://') && !item.includes('https://')) {
+          httpUrl = `http://${this.helperConfig.cdn.qiniu.domain}/${item}`
+          httpsUrl = `https://${this.helperConfig.cdn.qiniu.domain}/${item}`
+        } else {
+          httpUrl = item.includes('https://') ? item.replace('https://', 'http://') : item
+          httpsUrl = item.includes('http://') ? item.replace('http://', 'https://') : item
+        }
+        if (item.substring(item.lastIndexOf('/') + 1).includes('.')) {
+          if (!files.includes(httpUrl)) files.push(httpUrl)
+          if (!files.includes(httpsUrl)) files.push(httpsUrl)
+        } else {
+          if (!dirs.includes(httpUrl)) dirs.push(httpUrl)
+          if (!dirs.includes(httpsUrl)) dirs.push(httpsUrl)
+        }
+      })
+
+      // 单次要刷新的文件不可以超过100条
+      if (files.length > 100 || dirs.length > 10) {
+        console.log(chalk.black.yellow('单次刷新的文件不可以超过100条、目录不可以超过10个～'))
+        return
+      }
+
+      const refreshUrls = async () => {
+        return new Promise((resolve, reject) => {
+          if (!files.length) resolve()
+          this.cdnManager.refreshUrls(files, function (err, body) {
+            if (+body.code === 200) {
+              for (const i in body.taskIds) {
+                console.log(`${i}  ${chalk.black.green('Done')}`)
+              }
+              resolve()
+            } else {
+              for (const i in body.invalidUrls) {
+                console.log(chalk.black.red(body.invalidUrls[i]))
+              }
+              reject(`文件刷新错误：${body.code} ${body.error}`)
+            }
+          })
+        })
+      }
+
+      const refreshDirs = async () => {
+        return new Promise((resolve, reject) => {
+          if (!dirs.length) resolve()
+          this.cdnManager.refreshDirs(dirs, function (err, body) {
+            if (+body.code === 200) {
+              for (let i in body.taskIds) {
+                console.log(`${i}  ${chalk.black.green('Done')}`)
+              }
+              resolve()
+            } else {
+              for (const i in body.invalidUrls) {
+                console.log(chalk.black.red(body.invalidUrls[i]))
+              }
+              reject(`目录刷新错误：${body.code} ${body.error}`)
+            }
+          })
+        })
+      }
+
+      (async () => {
+        console.log(chalk.black.green('- CDN资源刷新开始 -'))
+        const startTime = new Date().getTime()
+        try {
+          await refreshUrls()
+          await refreshDirs()
+          console.log(chalk.black.green(`- CDN资源刷新完成，耗时 ${Math.ceil((new Date().getTime() - startTime) / 1000)}s -\n`))
+          resolve()
+        } catch (error) {
+          console.log(chalk.black.bgRed(error))
+          // reject(new Error(error))
+        }
+      })()
+    })
   }
 
   // 预取方法
   async prefetch() {
+    return new Promise((resolve, reject) => {
+      let items = [], list = []
+      if (this.args._.length) {
+        items = this.args._
+      } else if (this.ignoreConfig.cdn.prefetch.length) {
+        items = this.ignoreConfig.cdn.prefetch
+      } else {
+        console.log(chalk.black.yellow('请输入或配置要预取的资源～'))
+        return
+      }
 
+      if (items.some(item => {
+        return !item.substring(item.lastIndexOf('/') + 1).includes('.')
+      })) {
+        console.log(chalk.black.red('预取的资源必须是文件～'))
+        return
+      }
+
+      // http和https共享缓存，预取会自动预取两种协议的资源
+      items.forEach(item => {
+        let httpUrl = '', httpsUrl = ''
+        if (!item.includes('http://') && !item.includes('https://')) {
+          httpUrl = `http://${this.helperConfig.cdn.qiniu.domain}/${item}`
+          httpsUrl = `https://${this.helperConfig.cdn.qiniu.domain}/${item}`
+        } else {
+          httpUrl = item.includes('https://') ? item.replace('https://', 'http://') : item
+          httpsUrl = item.includes('http://') ? item.replace('http://', 'https://') : item
+        }
+        if (!list.includes(httpUrl)) list.push(httpUrl)
+        if (!list.includes(httpsUrl)) list.push(httpsUrl)
+      })
+
+      // 单次要预取的文件不可以超过100条
+      if (list.length > 100) {
+        console.log(chalk.black.yellow('单次预取的文件不可以超过100条～'))
+        return
+      }
+
+      console.log(chalk.black.green('- CDN资源预取开始 -'))
+      const startTime = new Date().getTime()
+      this.cdnManager.prefetchUrls(list, function (err, body) {
+        if (+body.code === 200) {
+          for (let i in body.taskIds) {
+            console.log(`${i}  ${chalk.black.green('Done')}`)
+          }
+          console.log(chalk.black.green(`- CDN资源预取完成，耗时 ${Math.ceil((new Date().getTime() - startTime) / 1000)}s -\n`))
+          resolve()
+        } else {
+          for (const i in body.invalidUrls) {
+            console.log(chalk.black.red(body.invalidUrls[i]))
+          }
+          console.log(chalk.black.bgRed(`目录刷新错误：${body.code} ${body.error}`))
+        }
+      })
+    })
   }
 
   // 日志方法

@@ -24,27 +24,19 @@ module.exports = (api, options) => {
       'helper:build push [commit type] [commit msg]': utils.addSpace('code构建 + cdn推送 + git推送'),
       'helper:cdn push': utils.addSpace('推送资源文件到cdn'),
       'helper:cdn remove': utils.addSpace('删除cdn资源文件'),
-      'helper:cdn refresh': utils.addSpace('刷新cdn资源文件'),
-      'helper:cdn refresh dir': utils.addSpace('刷新cdn资源目录'),
+      'helper:cdn refresh': utils.addSpace('刷新cdn资源目录或文件'),
       'helper:cdn prefetch': utils.addSpace('预获取cdn资源文件'),
       'helper:cdn getLogs': utils.addSpace('获取cdn访问日志'),
       'helper:git push [commit type] [commit msg]': utils.addSpace('推送当前项目代码到git')
     },
     details:
       'Warning: \n\n' +
-      // chalk.black.yellow(utils.addSpace('1、package.json 文件中必须自己定义一条名为 build 的构建任务！\n')) +
       chalk.black.yellow(utils.addSpace('1、插件安装后，会自动往 package.json 中添加以上的命令，注意自有任务不要重名！\n')) +
       chalk.black.yellow(utils.addSpace('2、[commit type] 和 [commit msg] 是 git 的的提交信息，必须填写！否则无法顺利部署！\n'))
   }, async args => {
     console.log(args)
 
     const pluginOptions = options.pluginOptions
-
-    // 任务配置错误
-    // if (!api.service.pkg.scripts.build) {
-    //   console.log(chalk.black.bgRed('错误：请先在 package.json 文件的 scripts 中新增一条 build 任务～'))
-    //   return
-    // }
 
     // 插件配置错误
     if (!pluginOptions || !pluginOptions.helper || !Object.keys(pluginOptions.helper).length) {
@@ -59,7 +51,11 @@ module.exports = (api, options) => {
     }
 
     // 任务输入错误
-    if (!args.build && !args.cdn && !args.git) {
+    if (
+      (!args.build && !args.cdn && !args.git) ||
+      (args.cdn && !['push', 'remove', 'refresh', 'prefetch', 'getLogs'].includes(args.cdn)) ||
+      (args.git && !['push'].includes(args.git))
+    ) {
       console.log(chalk.black.bgRed('错误：请输入正确的任务，可执行 npm run helper 或 npx vue-cli-service helper 查看更多帮助信息~'))
       return
     }
@@ -68,9 +64,10 @@ module.exports = (api, options) => {
     config.ignoreConfig = utils._.merge(ignoreConfig, pluginOptions.ignore)
     config.helperConfig = utils._.merge(helperConfig, pluginOptions.helper)
 
-    const buildStartTime = new Date().getTime()
+    // build 和 git 必须有 commit type 和 commit msg
 
-    console.log(chalk.black.bgGreen(' \n 任务开始 \n'))
+    const buildStartTime = new Date().getTime()
+    console.log(chalk.black.bgGreen('任务开始 \n'))
 
     if (args.build) {
       await build(config)
@@ -83,6 +80,6 @@ module.exports = (api, options) => {
       await git(config)
     }
 
-    console.log(chalk.black.bgGreen(`\n 任务顺利完成，总耗时 ${Math.ceil((new Date().getTime() - buildStartTime) / 1000)}s \n`))
+    console.log(chalk.black.bgGreen(`任务完成，总耗时 ${Math.ceil((new Date().getTime() - buildStartTime) / 1000)}s \n`))
   })
 }
