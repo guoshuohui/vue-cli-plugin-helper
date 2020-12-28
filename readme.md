@@ -1,11 +1,11 @@
 vue-cli-plugin-project-helper 工程助手（以下简称Helper）是一款协助你轻松打包与部署代码、静态资源的 Vue-CLI 插件。
 
-## - 环境
+## 环境
 
 - Node.js：>= v8.9（推荐 v10 以上）
 - Vue-CLI：>= 3.5.0（推荐 4.0.0 以上）
 
-## - 安装
+## 安装
 
 ```
 npm i vue-cli-plugin-project-helper --save-dev
@@ -24,17 +24,15 @@ scripts: {
 }
 ```
 
-通过以下命令可以查看更多帮助信息：
+通过以下命令可以查看更多帮助信息
 
 ```
 npm run helper
 ```
 
-## - 配置
+## 配置
 
-Helper 有两个核心的配置项 `helper` 和 `ignore`，均为必备配置项，请自行导入。
-
-在项目根目录创建两个配置文件 `helper.config.js` 和 `ignore.config.js`，然后在 `vue.config.js` 中导入它们，可以是其他配置文件名，但是导入配置项的 key 必须是  `helper` 和 `ignore` :
+Helper 有两个核心的配置项 `helper` 和 `ignore`，均为必备配置项，在项目根目录创建两个配置文件 `helper.config.js` 和 `ignore.config.js`，然后在 `vue.config.js` 中导入它们，可以是其他配置文件名，但是导入配置项的 key 必须是  `helper` 和 `ignore` :
 
 ```
 const helperConfig = require('./helper.config')
@@ -58,7 +56,7 @@ module.exports = {
 >
 > ignore.config.js 必须添加到项目的 .gitignore 忽略文件中，它不能随仓库一同提交！
 
-### - helper 选项
+### helper 选项
 
 helper 选项是插件和核心配置文件，该文件将会随代码一起被推送到仓库中，主要包含以下配置：
 
@@ -80,7 +78,7 @@ helper 选项是插件和核心配置文件，该文件将会随代码一起被�
 #### - git配置
 
 #### - 完整示例
-### - ignore 选项
+### ignore 选项
 
 并不是所有的配置信息都应该随代码一起被推送到仓库中，例如安全密钥、需要做临时cdn操作的信息，前者会泄露了安全信息，后者则容易造成冗余。`ignore` 的一级选项一般和 `helper` 一致，例如 build、cdn、git 等，主要包含以下配置：
 
@@ -105,7 +103,7 @@ qiniu: {
 ```
 #### - remove
 
-删除当前云存储域名和指定存储空间下的文件资源，不能是目录，不能带域名，域名采用当前 Provider 对应的 domain
+删除当前云存储域名和指定存储空间下的文件资源，不能是目录，不能带域名，域名采用当前 provider 对应的 domain
 
 ```
 remove: [
