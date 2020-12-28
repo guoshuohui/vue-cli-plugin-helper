@@ -6,14 +6,13 @@
  * service 命令
  */
 
-const child_process = require('child_process')
 const chalk = require('chalk')
 const utils = require('./libs/utils')
-const helperConfig = require('./libs/helper.config')
-const ignoreConfig = require('./libs/ignore.config')
 const build = require('./libs/build')
 const cdn = require('./libs/cdn')
 const git = require('./libs/git')
+const helperConfig = require('./libs/helper.config')
+const ignoreConfig = require('./libs/ignore.config')
 
 module.exports = (api, options) => {
   api.registerCommand('helper', {
