@@ -12,6 +12,7 @@ npm i vue-cli-plugin-project-helper --save-dev
 ```
 
 > 注意 ⚠️ 
+> 
 > 包安装后，会自动往 package.json 中注入以下 N 条任务命令，自有任务请不要重名！
 
 ```
