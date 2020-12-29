@@ -117,6 +117,62 @@ remove: [
 ],
 ```
 
+#### - refresh
+
+刷新cdn上的资源，支持目录、文件，目录最后必须加/，否则会被当做文件处理。支持指定域名，域名必须是合法的已解析到云存储服务器上的域名。
+
+```
+refresh: [
+
+  // 目录
+  'dist/2020-12-24-10-29-31/',
+
+  // 文件
+  'dist/2020-12-24-10-29-31',
+  'dist/2020-12-24-10-29-30/js/demo.js',
+  'https://cdn.xxx.com/dist/demo/demo.js'
+]
+```
+
+#### - prefetch
+
+与获取cdn上的资源，只能是文件，支持指定域名，域名必须是合法的已解析到云存储服务器上的域名。
+
+```
+prefetch: [
+  'dist/2020-12-24-10-29-31/js/demo.js',
+  'https://cdn.xxx.com/dist/demo/demo.js'
+],
+```
+
+cdn中，http 和 https 一般是共享缓存，refresh 和 prefetch 方法内部会自动创建和处理两条协议的资源，假设你配置了一下需要处理的资源
+
+```
+refresh: [
+  'dist/2020-12-24-10-29-30/'
+  'dist/2020-12-24-10-29-30/'
+  'dist/2020-12-24-10-29-31/js/demo.js',
+  'dist/2020-12-24-10-29-31/js/demo.js',
+  'http://cdn.xxx.com/dist/demo/demo.js'
+  'http://cdn.xxx.com/dist/demo/demo.js'
+]
+```
+
+最终处理的资源会变成如下，可以看到，每条配置的资源都会自动两条协议的资源（http 和 https），并且做了去重处理，所以同一条资源，一般只需配置一次即可。
+
+```
+refresh: [
+  'http://provider.domain/dist/2020-12-24-10-29-30/'
+  'https://provider.domain/dist/2020-12-24-10-29-30/'
+
+  'http://provider.domain/dist/2020-12-24-10-29-31/js/demo.js',
+  'https://provider.domain/dist/2020-12-24-10-29-31/js/demo.js',
+
+  'http://cdn.xxx.com/dist/demo/demo.js',
+  'https://cdn.xxx.com/dist/demo/demo.js'
+]
+```
+
 #### - 完整示例
 
 ```
@@ -131,13 +187,13 @@ module.exports = {
       secretKey: 'xxxx'
     },
 
-    // 删除资源，只能是文件，不带域名
+    // 删除资源
     remove: [
       'dist/2020-12-24-10-26-32/img/demo.png',
       'dist/2020-12-24-10-26-32/js/demo.js'
     ],
 
-    // 刷新资源，支持目录、文件和指定域名，目录最后必须加/，否则会被当作文件处理
+    // 刷新资源
     refresh: [
       'dist/2020-12-24-10-29-30/js/demo.js',
       'dist/2020-12-24-10-29-31/',
@@ -145,7 +201,7 @@ module.exports = {
       'https://cdn.xxx.com/dist/demo/demo.js'
     ],
 
-    // 预取文件，只能是文件，支持指定域名
+    // 预取文件
     prefetch: [
       'dist/2020-12-24-10-29-31/js/demo.js',
       'https://cdn.xxx.com/dist/demo/demo.js'
