@@ -122,66 +122,7 @@ cdn: {
 
 资源每次推送并发数，每个服务提供商的可并发数都不尽相同，七牛云一般最高为 3，如果你网络状况很不好，也可以使用 1，默认即可。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 配置
-
-Helper 有两个核心的配置项 `helper` 和 `ignore`，均为必备配置项，在项目根目录创建两个配置文件 `helper.config.js` 和 `ignore.config.js`，然后在 `vue.config.js` 中导入它们，可以是其他配置文件名，但是导入配置项的 key 必须是  `helper` 和 `ignore` :
-
-```
-const helperConfig = require('./helper.config')
-const ignoreConfig = require('./ignore.config')
-
-module.exports = {
-
-  // 插件配置
-  pluginOptions: {
-
-    // 助手配置
-    helper: helperConfig,
-
-    // 忽略配置
-    ignore: ignoreConfig
-  }
-}
-```
-
-> 注意 ⚠️
->
-> ignore.config.js 必须添加到项目的 .gitignore 忽略文件中，它不能随仓库一同提交demo！
-
+> 更多配置信息帮助，请阅读一下说明：
 ### helper 选项
 
 helper 选项是插件和核心配置文件，该文件将会随代码一起被推送到仓库中，主要包含以下配置：
