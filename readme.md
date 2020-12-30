@@ -19,10 +19,10 @@ vue-cli-plugin-project-helper 工程助手（以下简称 Helper）是一款协�
     - [refresh](#--refresh)
     - [prefetch](#--prefetch)
     - [getLog](#--getLog)
-  - [命令](#命令)
-    - [代码构建](#--git)
-    - [资源部署](#--git)
-    - [生产部署](#--git)
+- [命令](#命令)
+  - [代码构建](#代码构建)
+  - [资源部署](#资源部署)
+  - [代码部署](#代码部署)
 
 ## 环境
 
@@ -52,10 +52,7 @@ scripts: {
 }
 ```
 
-2、项目根目录会自动创建两个配置文件，其中 `ignore.config.js` 会被自动加入到 git 的 `.gitignore` 忽略配置文件中。
-
-- helper.config.js
-- ignore.config.js
+2、项目根目录会自动创建两个配置文件 `helper.config.js` 和 `ignore.config.js`，其中 `ignore.config.js` 会被自动加入到 git 的 `.gitignore` 忽略配置文件中。
 
 3、`vue.config.js` 文件会自动引入和传递配置选项到 pluginOptions 中，如果 `vue.config.js` 文件不存在，Helper 会自动创建并配置。
 
@@ -321,3 +318,10 @@ module.exports = {
 ```
 
 ## 命令
+
+### 代码构建
+
+### 资源部署
+
+
+### 代码部署
