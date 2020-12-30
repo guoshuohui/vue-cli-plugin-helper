@@ -1,24 +1,15 @@
 vue-cli-plugin-project-helper 工程助手（以下简称 Helper）是一款协助你轻松打包与部署代码、静态资源的 Vue-CLI 插件。一定程度的解放你的双手！
 
 
-## 导航
+## 目录
 
 - [环境](#环境)
 - [安装](#安装)
 - [配置](#配置)
   - [自动注入配置](#自动注入配置)
   - [手动更改配置](#手动更改配置)
-  - [helper选项](#helper选项)
-    - [build](#--build)
-    - [cdn](#--cdn)
-    - [git](#--git)
-    - [完整示例](#--完整示例)
-  - [ignore选项](#ignore选项)
-    - [qiniu](#--qiniu)
-    - [remove](#--remove)
-    - [refresh](#--refresh)
-    - [prefetch](#--prefetch)
-    - [getLog](#--getLog)
+	  - [helper选项](#helper选项)
+	  - [ignore选项](#ignore选项)
 - [命令](#命令)
   - [代码构建](#代码构建)
   - [资源部署](#资源部署)
