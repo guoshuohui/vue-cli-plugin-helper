@@ -56,17 +56,21 @@ module.exports = {
 
 1、配置 cdn 云存储服务提供商信息
 
-在 `helper.config.js` 中配置你需要的服务提供商（qiniu、tencent、aliyun、upyun等），默认使用七牛
+服务提供商默认使用七牛云，后续也会增加其他服务商，例如tencent、aliyun、upyun等。
 
 ```
+// helper.config.js
+
 cdn: {
   provider: 'qiniu'
 }
 ```
 
-在 `ignore.config.js` 中配置服务提供商安全秘钥，注意这里的 qiniu 字段就是对应服务商名，和以上的 provider 名对应 。
+配置服务提供商安全秘钥，注意这里的 qiniu 字段就是对应服务商名，和以上的 provider 名对应 。
 
 ```
+// helper.config.js
+
 cdn: {
   qiniu: {
     accessKey: 'xxx',
@@ -86,6 +90,8 @@ helper.config.js > vue.config.js > cli default（dist）
 cdn.onlineDir 选项用于指定 cdn 云存储上的主目录（推荐应用英文名），推荐使用“主目录 + 时间目录”形式来命名，可以更好的辨识版本。当然，你也可以只指定主目录，这样可以让没有被篡改 hash 的静态资源在用户访问应用时，不会每次都请求新的版本，一定程度上缩短 cdn 访问时长。
 
 ```
+// helper.config.js
+
 // 带时间目录
 onlineDir: (() => {
   const date = new Date()
@@ -98,14 +104,24 @@ onlineDir: 'dist'
 
 3、指定存储空间
 
-
-
-## 使用
-通过以下命令可以查看更多帮助信息
+每个服务商对应的存储空间（Bucket）都不同，配置和命名也会对应 SDK 命名，以下为七牛云的存储空间配置
 
 ```
-npm run helper
+// helper.config.js
+
+cdn: {
+  qiniu: {
+    options: {
+      scope: 'bucket'
+    }
+  }
+}
 ```
+
+4、最大并发数
+
+资源每次推送并发数，每个服务提供商的可并发数都不尽相同，七牛云一般最高为 3，如果你网络状况很不好，也可以使用 1，默认即可。
+
 
 
 
@@ -203,7 +219,7 @@ cdn 相关配置，位于 cdn 选项中
 
 #### - qiniu
 
-七牛密钥信息，服务提供商密钥为敏感且重要的信息，请不要随仓库代码一起提交，应该加入本地忽略文件中！
+七牛云密钥信息，服务提供商密钥为敏感且重要的信息，请不要随仓库代码一起提交，应该加入本地忽略文件中！
 
 ```
 qiniu: {
