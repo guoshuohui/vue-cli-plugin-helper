@@ -5,9 +5,9 @@
  * 文档：https://developer.qiniu.com/kodo/sdk/1289/nodejs
  */
 
+const { EOL } = require('os')
 const qiniu = require('qiniu')
 const chalk = require('chalk')
-const { reject } = require('lodash')
 
 module.exports = class ProviderQiniu {
   constructor(config = {}) {
@@ -41,7 +41,7 @@ module.exports = class ProviderQiniu {
       this.formUploader.putFile(
         this.uploadToken,
         onlineFile,
-        `${this.helperConfig.cdn.localDir}/${file}`,
+        `${this.helperConfig.cdn.outputDir}/${file}`,
         putExtra,
         (err, body, info) => {
           if (info && +info.statusCode === 200) {
@@ -77,7 +77,7 @@ module.exports = class ProviderQiniu {
           }
         }
         if (counter === this.distFiles.length) {
-          console.log(chalk.black.green(`- 静态资源推送完成，耗时 ${Math.ceil((new Date().getTime() - startTime) / 1000)}s -\n`))
+          console.log(chalk.black.green(`- 静态资源推送完成，耗时 ${Math.ceil((new Date().getTime() - startTime) / 1000)}s -${EOL}`))
           resolve()
         }
       })()
@@ -108,7 +108,7 @@ module.exports = class ProviderQiniu {
       // 如果文件夹内的文件被清空，目录也会自动被删除
       console.log(chalk.black.green('- 静态资源删除开始 -'))
       const startTime = new Date().getTime()
-      this.bucketManager.batch(deleteOperations, (err, body, info) => {
+      this.bucketManager.batch(deleteOperations, (err, body) => {
         if (body && body.length) {
           let error = false
           body.forEach((item, index) => {
@@ -123,7 +123,7 @@ module.exports = class ProviderQiniu {
             console.log(chalk.black.bgRed('错误：有文件删除失败哦～'))
             return
           }
-          console.log(chalk.black.green(`- 静态资源删除完成，耗时 ${Math.ceil((new Date().getTime() - startTime) / 1000)}s -\n`))
+          console.log(chalk.black.green(`- 静态资源删除完成，耗时 ${Math.ceil((new Date().getTime() - startTime) / 1000)}s -${EOL}`))
           resolve()
         }
       })
@@ -212,7 +212,7 @@ module.exports = class ProviderQiniu {
         try {
           await refreshUrls()
           await refreshDirs()
-          console.log(chalk.black.green(`- CDN资源刷新完成，耗时 ${Math.ceil((new Date().getTime() - startTime) / 1000)}s -\n`))
+          console.log(chalk.black.green(`- CDN资源刷新完成，耗时 ${Math.ceil((new Date().getTime() - startTime) / 1000)}s -${EOL}`))
           resolve()
         } catch (error) {
           console.log(chalk.black.bgRed(error))
@@ -269,7 +269,7 @@ module.exports = class ProviderQiniu {
           for (let i in body.taskIds) {
             console.log(`${i}  ${chalk.black.green('Done')}`)
           }
-          console.log(chalk.black.green(`- CDN资源预取完成，耗时 ${Math.ceil((new Date().getTime() - startTime) / 1000)}s -\n`))
+          console.log(chalk.black.green(`- CDN资源预取完成，耗时 ${Math.ceil((new Date().getTime() - startTime) / 1000)}s -${EOL}`))
           resolve()
         } else {
           for (const i in body.invalidUrls) {
@@ -281,9 +281,46 @@ module.exports = class ProviderQiniu {
     })
   }
 
-  // 日志方法
-  async getLogs() {
+  // 获取日志方法
+  async getLog() {
+    return new Promise((resolve, reject) => {
+      let day = ''
+      if (this.args._.length) {
+        day = this.args._[0]
+      } else if (this.ignoreConfig.cdn.log.day) {
+        day = this.ignoreConfig.cdn.log.day
+      } else {
+        console.log(chalk.black.yellow('请输入或配置要获取的日志日期～'))
+        return
+      }
 
+      let domains = this.ignoreConfig.cdn.log.domains
+      if (!domains.length) {
+        domains = [this.helperConfig.cdn.qiniu.domain]
+      }
+
+      console.log(chalk.black.green('- CDN日志地址获取开始 -'))
+      const startTime = new Date().getTime()
+      this.cdnManager.getCdnLogList(domains, day, function (err, body) {
+        if (+body.code === 200) {
+          const logData = body.data
+          if (!Object.keys(logData).length) {
+            console.log(chalk.black.red('暂无日志信息～'))
+            return
+          }
+          domains.forEach(item => {
+            const logs = logData[item]
+            logs.forEach(list => {
+              console.log(`${list.url}  ${chalk.black.green('Done')}`)
+            })
+          })
+          console.log(chalk.black.green(`- CDN日志地址获取完成，耗时 ${Math.ceil((new Date().getTime() - startTime) / 1000)}s -${EOL}`))
+          resolve()
+        } else {
+          console.log(chalk.black.red(`Error：${body.code} ${body.error}`))
+        }
+      })
+    })
   }
 }
 

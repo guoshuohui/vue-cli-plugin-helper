@@ -4,6 +4,7 @@
  * code构建
  */
 
+const { EOL } = require('os')
 const child_process = require('child_process')
 const chalk = require('chalk')
 
@@ -40,7 +41,7 @@ module.exports = async config => {
     // 执行完成
     spawn.on('close', code => {
       if (!code) {
-        console.log(chalk.black.green(`- 代码构建完成，耗时 ${Math.floor((new Date().getTime() - startTime) / 1000)}s -\n`))
+        console.log(chalk.black.green(`- 代码构建完成，耗时 ${Math.floor((new Date().getTime() - startTime) / 1000)}s -${EOL}`))
         resolve()
       }
     })

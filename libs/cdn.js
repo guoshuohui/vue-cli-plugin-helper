@@ -24,7 +24,7 @@ module.exports = async config => {
     // 获取打包文件
     let distFiles = []
     try {
-      distFiles = walkSync(config.helperConfig.cdn.localDir, {
+      distFiles = walkSync(config.helperConfig.cdn.outputDir, {
         globs: config.helperConfig.cdn.globs,
         directories: false
       })

@@ -1,7 +1,5 @@
-'use strict'
-
 /**
- * 默认忽略配置
+ * 忽略配置
  */
 
 module.exports = {
@@ -24,14 +22,14 @@ module.exports = {
     // 预取文件，只能是文件
     prefetch: [],
 
-    // 获取日志
-    logs: {
+    // 获取日志下载地址
+    log: {
 
       // 域名，默认是当前 provider 的 domain
-      domain: '',
+      domains: [],
 
-      // 日期，默认今天，例如：['2020-12-20']
-      dates: []
+      // 日期，默认今天，例如：'2020-12-20'
+      day: ''
     }
   }
 }

@@ -1,10 +1,11 @@
-'use strict'
-
 /**
- * 默认助手配置
+ * 助手配置
  */
 
-const utils = require('./utils')
+const addZero = n => {
+  const num = parseInt(n)
+  return num < 10 ? 0 + '' + num : num
+}
 
 module.exports = {
 
@@ -27,13 +28,12 @@ module.exports = {
     ],
 
     // 本地资源路径
-    localDir: 'dist',
+    // outputDir: 'dist',
 
     // 线上资源路径
     onlineDir: (() => {
       const date = new Date()
-      return `dist/${date.getFullYear()}-${utils.addZero(date.getMonth() + 1)}-${utils.addZero(date.getDate())}`
-      // return `dist/${date.getFullYear()}-${utils.addZero(date.getMonth() + 1)}-${utils.addZero(date.getDate())}-${utils.addZero(date.getHours())}-${utils.addZero(date.getMinutes())}-${utils.addZero(date.getSeconds())}`
+      return `dist/${date.getFullYear()}-${addZero(date.getMonth() + 1)}-${addZero(date.getDate())}`
     })(),
 
     // 上传后删除资源目录

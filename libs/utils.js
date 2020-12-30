@@ -20,7 +20,7 @@ module.exports = {
 
   // 补零
   addZero (n) {
-    let num = parseInt(n)
+    const num = parseInt(n)
     return num < 10 ? 0 + '' + num : num
   }
 }

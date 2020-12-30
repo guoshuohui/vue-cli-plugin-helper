@@ -1,4 +1,4 @@
-vue-cli-plugin-project-helper 工程助手（以下简称Helper）是一款协助你轻松打包与部署代码、静态资源的 Vue-CLI 插件。
+vue-cli-plugin-project-helper 工程助手（以下简称 Helper）是一款协助你轻松打包与部署代码、静态资源的 Vue-CLI 插件。一定程度的解放你的双手！
 
 ## 环境
 
@@ -11,9 +11,13 @@ vue-cli-plugin-project-helper 工程助手（以下简称Helper）是一款协�
 npm i vue-cli-plugin-project-helper --save-dev
 ```
 
-> 注意 ⚠️ 
-> 
-> 包安装后，会自动往 package.json 中注入以下 N 条任务命令，自有任务请不要重名！
+执行 `npm run helper` 可查看帮助信息。
+
+## 配置
+
+### 自动注入配置
+
+1、Helper 安装后，会自动往 `package.json` 中注入以下 N 条任务命令，自有任务请不要重名！
 
 ```
 scripts: {
@@ -24,11 +28,117 @@ scripts: {
 }
 ```
 
+2、项目根目录会自动创建两个配置文件，其中 `ignore.config.js` 会被自动加入到 git 的 `.gitignore` 忽略配置文件中。
+
+- helper.config.js
+- ignore.config.js
+
+3、`vue.config.js` 文件会自动引入和传递配置选项到 pluginOptions 中，如果 `vue.config.js` 文件不存在，Helper 会自动创建并配置。
+
+```
+const ignoreConfig = require('./ignore.config')
+const helperConfig = require('./helper.config')
+module.exports = {
+  pluginOptions: {
+    ignore: ignoreConfig,
+    helper: helperConfig
+  }
+}
+```
+
+> 注意 ⚠️
+>
+> `ignore.config.js` 必须加入 git 忽略配置中，因为它可能包含敏感信息！
+
+### 手动更改配置
+
+前面自动注入的配置为默认项，一般还需要手动配置以下重要配置项，以便部署过程能顺利进行。
+
+1、配置 cdn 云存储服务提供商信息
+
+在 `helper.config.js` 中配置你需要的服务提供商（qiniu、tencent、aliyun、upyun等），默认使用七牛
+
+```
+cdn: {
+  provider: 'qiniu'
+}
+```
+
+在 `ignore.config.js` 中配置服务提供商安全秘钥，注意这里的 qiniu 字段就是对应服务商名，和以上的 provider 名对应 。
+
+```
+cdn: {
+  qiniu: {
+    accessKey: 'xxx',
+    secretKey: 'xxx'
+  }
+}
+```
+
+2、配置打包部署路径
+
+`helper.config.js` 中的 cdn.outputDir 为生产环境构建文件的目录 - `dist`，默认读取 `vue.config.js` 的 outputDir 选项，当然，你也可以自定义其他路径，以便在独立执行 `helper:cdn` 命令时可以推送指定目录资源。它们的配置顺序如下，一般你不需要去改这个选项，默认即可。
+
+```
+helper.config.js > vue.config.js > cli default（dist）
+```
+
+cdn.onlineDir 选项用于指定 cdn 云存储上的主目录（推荐应用英文名），推荐使用“主目录 + 时间目录”形式来命名，可以更好的辨识版本。当然，你也可以只指定主目录，这样可以让没有被篡改 hash 的静态资源在用户访问应用时，不会每次都请求新的版本，一定程度上缩短 cdn 访问时长。
+
+```
+// 带时间目录
+onlineDir: (() => {
+  const date = new Date()
+  return `dist/${date.getFullYear()}-${addZero(date.getMonth() + 1)}-${addZero(date.getDate())}`
+})()
+
+// 不带时间目录
+onlineDir: 'dist'
+```
+
+3、指定存储空间
+
+
+
+## 使用
 通过以下命令可以查看更多帮助信息
 
 ```
 npm run helper
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 配置
 
@@ -54,7 +164,7 @@ module.exports = {
 
 > 注意 ⚠️
 >
-> ignore.config.js 必须添加到项目的 .gitignore 忽略文件中，它不能随仓库一同提交！
+> ignore.config.js 必须添加到项目的 .gitignore 忽略文件中，它不能随仓库一同提交demo！
 
 ### helper 选项
 
@@ -119,7 +229,7 @@ remove: [
 
 #### - refresh
 
-刷新cdn上的资源，支持目录、文件，目录最后必须加/，否则会被当做文件处理。支持指定域名，域名必须是合法的已解析到云存储服务器上的域名。
+刷新 cdn 上的资源，支持目录、文件，目录最后必须加/，否则会被当做文件处理。支持指定域名，域名必须是合法的已解析到云存储服务器上的域名。
 
 ```
 refresh: [
@@ -136,7 +246,7 @@ refresh: [
 
 #### - prefetch
 
-与获取cdn上的资源，只能是文件，支持指定域名，域名必须是合法的已解析到云存储服务器上的域名。
+与获取 cdn 上的资源，只能是文件，支持指定域名，域名必须是合法的已解析到云存储服务器上的域名。
 
 ```
 prefetch: [
@@ -145,7 +255,7 @@ prefetch: [
 ],
 ```
 
-cdn中，http 和 https 一般是共享缓存，refresh 和 prefetch 方法内部会自动创建和处理两条协议的资源，假设你配置了一下需要处理的资源
+在 cdn 中，http 和 https 一般是共享缓存，refresh 和 prefetch 方法内部会自动创建和处理两条协议的资源，假设你配置了一下需要处理的资源
 
 ```
 refresh: [
@@ -171,6 +281,20 @@ refresh: [
   'http://cdn.xxx.com/dist/demo/demo.js',
   'https://cdn.xxx.com/dist/demo/demo.js'
 ]
+```
+
+#### - getLog
+
+获取资源访问日志，便于问题排查。域名可以配置多个，但是日期只能输入或者配置一个，避免数据量太大～
+
+```
+log: {
+  domains: [
+    'cdn.a.com',
+    'cdn.b.com'
+  ],
+  day: '2020-12-20'
+}
 ```
 
 #### - 完整示例
@@ -207,11 +331,12 @@ module.exports = {
       'https://cdn.xxx.com/dist/demo/demo.js'
     ],
 
+    // 获取日志
+    getLog: [
+
+    ]
   }
 }
 ```
-
-## - 使用
-
 
 
