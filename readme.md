@@ -20,6 +20,9 @@ vue-cli-plugin-project-helper 工程助手（以下简称 Helper）是一款协�
     - [prefetch](#--prefetch)
     - [getLog](#--getLog)
   - [命令](#命令)
+    - [代码构建](#--git)
+    - [资源推送](#--git)
+    - [代码推送](#--git)
 
 ## 环境
 
