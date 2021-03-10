@@ -26,8 +26,6 @@ vue-cli-plugin-project-helper 工程助手（以下简称 Helper）是一款协�
 npm i vue-cli-plugin-project-helper --save-dev
 ```
 
-执行 `npm run helper` 可查看帮助信息。
-
 ## 配置
 
 ### 自动注入配置
@@ -310,7 +308,18 @@ module.exports = {
 
 ## 命令
 
+核心命令主要有三条
+
+```
+'helper': 'vue-cli-service helper --help',
+'helper:build': 'vue-cli-service helper --build',
+'helper:cdn': 'vue-cli-service helper --cdn',
+'helper:git': 'vue-cli-service helper --git',
+```
+
 ### 代码构建
+
+
 
 ### 资源部署
 

@@ -1,10 +1,19 @@
 {
-  "name": "vue-cli-plugin-da",
+  "name": "vue-cli-plugin-helper",
   "version": "1.0.0",
-  "description": "vue-cli plugin to deploy",
+  "description": "款将资源轻松部署到CDN和Git服务器的Vue-CLI3+工程插件",
   "main": "index.js",
   "scripts": {},
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/guoshuohui/vue-cli-plugin-helper"
+  },
+  "keywords": [
+    "qiniu",
+    "cdn",
+    "deploy",
+    "vue-cli-plugin"
+  ],
   "author": "guoshuohui",
   "license": "ISC",
   "dependencies": {

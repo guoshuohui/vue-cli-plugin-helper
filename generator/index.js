@@ -4,7 +4,6 @@
 
 const { EOL } = require('os')
 const fs = require('fs')
-const { config } = require('process')
 
 /**
  * 生成器
